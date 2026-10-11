@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="view">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Enablement for Economic Growth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#17302B; --muted:#5A6D68; --paper:#F2F6F4; --card:#fff; --line:#D6E0DB;
+  --done:#1F7A57; --done-bg:#E1F1E8;
+  --progress:#9A6208; --progress-bg:#FBEFD6;
+  --blocked:#2F5F9F; --blocked-bg:#E3ECF8;
+  --delayed:#B3392F; --delayed-bg:#FBE4E1;
+  --open:#5F716C; --open-bg:#E9EEEC;
+  --focus:#1F7A57;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.55 "IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:22px 0 18px}
+.top h1{margin:0;font-size:clamp(22px,3.4vw,32px);line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.top .sub{margin:4px 0 0;color:var(--muted);font-size:14px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.badge{font-size:13px;font-weight:600;padding:5px 12px;border-radius:99px;border:1.5px solid var(--ink)}
+.badge.edit{background:var(--ink);color:#fff}
+.btn{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 12px;font-size:14px;font-weight:500}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--done);border-color:var(--done);color:#fff}
+.btn.danger{color:var(--delayed);border-color:#E7B9B4}
+.btn.sm{padding:4px 10px;font-size:13px}
+.lang{display:inline-flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.lang button{border:0;background:none;padding:6px 12px;font-size:14px}
+.lang button[aria-pressed=true]{background:var(--ink);color:#fff}
+
+/* hero */
+.hero{background:var(--ink);color:#F3FAF6;border-radius:14px;padding:28px clamp(18px,4vw,36px) 26px}
+.hero h2{margin:0 0 20px;font-size:clamp(24px,4.4vw,42px);line-height:1.15;font-weight:600;letter-spacing:-.015em}
+.hero h2 span{color:#9DB5AD;font-weight:400}
+.stack{display:flex;height:34px;border-radius:8px;overflow:hidden;gap:3px;background:#0F211D}
+.stack button{border:0;padding:0;min-width:6px;transition:flex-grow .4s}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:14px}
+.legend button{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px solid #3A5851;color:#F3FAF6;border-radius:99px;padding:5px 12px 5px 9px;font-size:14px}
+.legend button[aria-pressed=true]{background:#F3FAF6;color:var(--ink)}
+.legend i,.dot{width:11px;height:11px;border-radius:3px;display:inline-block;flex:none}
+.legend b{font-weight:700}
+.ws-rows{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px 32px;margin-top:24px;padding-top:20px;border-top:1px solid #34504A}
+.ws-row .lbl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;color:#CFE0DA}
+.ws-row .lbl b{color:#fff}
+.mini{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px;background:#0F211D}
+
+/* attention */
+.attn{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 4px}
+.attn button{display:inline-flex;align-items:baseline;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 14px;font-size:14px}
+.attn button strong{font-size:20px;line-height:1}
+.attn button[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.attn .late strong{color:var(--delayed)} .attn .wait strong{color:var(--blocked)} .attn .none strong{color:var(--progress)}
+
+/* filters */
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 14px}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg button{border:0;background:none;padding:7px 14px;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.filters select,.filters input{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff;font-size:14px}
+.filters input{min-width:200px;flex:1 1 200px;max-width:320px}
+.panes{display:none}
+
+/* lists */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.col h3{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:19px}
+.col h3 .n{font-size:14px;font-weight:600;padding:2px 10px;border-radius:99px;color:#fff}
+.col.donec h3{color:var(--done)} .col.donec h3 .n{background:var(--done)}
+.col.todoc h3 .n{background:var(--ink)}
+.grp{margin:0 0 18px}
+.grp h4{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:14px;font-weight:600;color:var(--muted)}
+ul.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.task{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--open);border-radius:10px;padding:11px 14px;display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.task.s-done{border-inline-start-color:var(--done)}
+.task.s-progress{border-inline-start-color:#D9951F}
+.task.s-blocked{border-inline-start-color:var(--blocked)}
+.task.s-delayed{border-inline-start-color:var(--delayed)}
+.task .t{margin:0 0 6px;font-weight:500;overflow-wrap:anywhere}
+.task.s-done .t{color:#34504A}
+.meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:13px}
+.chip{padding:1px 9px;border-radius:99px;background:var(--open-bg);color:#3F514C;font-weight:500;white-space:nowrap}
+.chip.who{background:#DDEAE5;color:var(--ink);font-weight:600}
+.chip.late{background:var(--delayed-bg);color:var(--delayed);font-weight:600}
+.chip.p-high{background:#FBE4E1;color:#8E2B23}
+.chip.p-medium{background:var(--progress-bg);color:#7A4E06}
+.chip.p-low{background:var(--open-bg);color:#3F514C}
+.chip.ws{background:#fff;border:1px solid var(--line);color:var(--muted)}
+.rem{margin:7px 0 0;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.rem a,.lnk{color:var(--blocked);font-weight:500}
+.lnk{display:inline-block;margin-top:6px;font-size:13px;overflow-wrap:anywhere}
+.acts{display:flex;flex-direction:column;gap:6px;align-items:stretch;flex:none}
+.acts select{border:1.5px solid var(--line);border-radius:8px;padding:4px 6px;font-size:13px;background:#fff;max-width:150px}
+.empty{padding:18px;border:1.5px dashed var(--line);border-radius:10px;color:var(--muted);text-align:center}
+
+/* owners */
+.owners{margin:28px 0 8px}
+.owners h3{margin:0 0 10px;font-size:19px}
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.og button{text-align:start;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.og button[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.og .r{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.og .r b{font-weight:600}
+.og .r span{color:var(--muted)}
+.og .mini{background:#E3EAE7;height:8px}
+
+footer{margin:28px 0 40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+
+/* dialog */
+dialog{border:0;border-radius:14px;padding:0;width:min(560px,94vw);box-shadow:0 20px 60px rgba(10,30,25,.35)}
+dialog::backdrop{background:rgba(10,30,25,.55)}
+.dlg{padding:20px 22px}
+.dlg h3{margin:0 0 14px;font-size:20px}
+.f{display:grid;gap:12px}
+.f .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.f input,.f select,.f textarea{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-weight:400;color:var(--ink);background:#fff;width:100%}
+.f textarea{min-height:70px;resize:vertical}
+.dact{display:flex;gap:8px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+.dact div{display:flex;gap:8px}
+
+@media (max-width:900px){
+  .cols{grid-template-columns:1fr}
+  .panes{display:inline-flex;margin:0 0 12px}
+  .cols[data-pane=done] .todoc,.cols[data-pane=todo] .donec{display:none}
+  .col h3{display:none}
+}
+@media (max-width:520px){
+  .wrap{padding:0 12px}
+  .task{flex-direction:column}
+  .acts{flex-direction:row;width:100%}
+  .f .two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.tools,.filters,.acts,.panes{display:none!important}.cols[data-pane] .col{display:block!important}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<dialog id="dlg"></dialog>
+<input type="file" id="file" accept="application/json" hidden>
+<script id="app-data" type="application/json">{"meta": {"title": "Business Enablement for Economic Growth", "titleAr": "تمكين الأعمال للنمو الاقتصادي", "pm": "Anas", "updated": "2026-10-11"}, "tasks": [{"id": "e3", "ws": "enablement", "task": "Finalise the UX/UI of the business enablement portal", "who": "Mohaya", "due": "2026-10-11", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e4", "ws": "enablement", "task": "Finalise the content of the UI", "who": "Abuelbashar", "due": "2026-10-12", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e5", "ws": "enablement", "task": "send calin the HTML", "who": "Mohaya", "due": "2026-10-12", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e6", "ws": "enablement", "task": "put it under economy sub account but create a new and seperate pipeline for it with The tag \"enablement\"", "who": "", "due": "", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e7", "ws": "enablement", "task": "provide Calin infromation regarding the inputs from GHL", "who": "Khuram", "due": "2026-10-09", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e8", "ws": "enablement", "task": "ask the infrasturcutre team regarding the SMS OTP", "who": "Alaa", "due": "2026-10-11", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e9", "ws": "enablement", "task": "analyse and the requested hours completely", "who": "Calin", "due": "2026-10-14", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e10", "ws": "enablement", "task": "Create 3 posts for social media", "who": "Abuelbashar", "due": "2026-10-11", "priority": "", "status": "done", "remarks": "", "link": ""}, {"id": "e11", "ws": "enablement", "task": "Design the 3 posts for paid ads", "who": "H. Farhat", "due": "2026-10-11", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e12", "ws": "enablement", "task": "Create 3 posts for paid ads", "who": "Abuelbashar", "due": "2026-10-11", "priority": "", "status": "progress", "remarks": "", "link": ""}, {"id": "e13", "ws": "enablement", "task": "design the 3 posts for paid ads", "who": "H. Farhat", "due": "2026-10-13", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e14", "ws": "enablement", "task": "coordinate with the DMO to and get the size and locaiton of the kiosk and billbaords we can use - get size of billboards and kiosk", "who": "Abuelbashar", "due": "2026-10-11", "priority": "", "status": "open", "remarks": "Get support from Mujahid via Anas", "link": ""}, {"id": "e15", "ws": "enablement", "task": "Create content and concept for the billboard", "who": "Abuelbashar", "due": "2026-10-14", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e16", "ws": "enablement", "task": "design the infographic or the post", "who": "H. Farhat", "due": "2026-10-20", "priority": "", "status": "open", "remarks": "make it simple but clear", "link": ""}, {"id": "e17", "ws": "enablement", "task": "create email campaign of 3 emails and to be sent to the investors and SME from Economy franchise", "who": "Abuelbashar", "due": "2026-10-11", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e18", "ws": "enablement", "task": "design a general template for GHL to be shared with Khuram and used on different franchise", "who": "Mohaya", "due": "2026-10-13", "priority": "", "status": "open", "remarks": "fill the template with Auelbashar email content", "link": ""}, {"id": "e19", "ws": "enablement", "task": "provide the domain name", "who": "Alaa", "due": "2026-10-11", "priority": "", "status": "open", "remarks": "Business.Almunwarah.sa/enablement", "link": ""}, {"id": "e20", "ws": "enablement", "task": "develop the portal in typo3", "who": "Calin", "due": "", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e21", "ws": "enablement", "task": "connect the portal to ghl", "who": "Khuram", "due": "", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e22", "ws": "enablement", "task": "coordinate with abdulmajeed to assign an owner for the claims To be trained on GHL and get access to them", "who": "Alaa", "due": "", "priority": "", "status": "open", "remarks": "", "link": ""}, {"id": "e23", "ws": "enablement", "task": "create a dashboard on power Bi for thif project", "who": "Anas", "due": "2026-10-11", "priority": "", "status": "open", "remarks": "", "link": ""}]}</script>
+<script>
+(function(){
+'use strict';
+const EDIT = document.documentElement.dataset.mode === 'edit';
+const SINGLE = true;
+const KEY = 'be-enablement-dashboard-v1';
+const $ = (s,r=document)=>r.querySelector(s);
+const ORDER = ['delayed','progress','blocked','open'];     // order of "not done" groups
+const BAR   = ['done','progress','blocked','delayed','open'];
+const COLOR = {done:'#4CC38A',progress:'#F0B44A',blocked:'#7FA9E6',delayed:'#F0786C',open:'#8FA19C'};
+const SWATCH= {done:'#1F7A57',progress:'#D9951F',blocked:'#2F5F9F',delayed:'#B3392F',open:'#7A8A86'};
+
+const T = {
+ en:{
+  title:'Business Enablement for Economic Growth', pm:'Project manager', updated:'Updated',
+  viewOnly:'View only', editing:'Editing mode',
+  hero:(d,n)=>`${d} of ${n} tasks done`, left:n=>` — ${n} still to go`,
+  done:'Done', progress:'In progress', blocked:'Waiting on dependency', delayed:'Delayed', open:'Not started',
+  notDone:'Not done yet', doneH:'Done', pastDue:'Past due', noOwner:'No owner',
+  ws_economy:'Economy path', ws_enablement:'Enablement portal', byWs:'By workstream',
+  all:'All', owner:'Owner', allOwners:'All owners', priority:'Priority', allPri:'All priorities',
+  high:'High', medium:'Medium', low:'Low', search:'Search tasks', clear:'Clear filters',
+  byOwner:'By owner', n_open:n=>`${n} open`, unassigned:'Unassigned', tasks:'tasks', empty:'No tasks match these filters.',
+  addTask:'Add task', edit:'Edit', save:'Save', cancel:'Cancel', del:'Delete', confirmDel:'Delete this task?',
+  exportView:'Download view-only copy', exportData:'Backup data', importData:'Restore backup', reset:'Reset to file data',
+  confirmReset:'Discard all changes made in this browser and go back to the data saved in this file?', settings:'Settings',
+  fTask:'Task', fWs:'Workstream', fWho:'Owner (Who)', fDue:'Due date', fPri:'Priority', fStatus:'Status', fRem:'Remarks', fLink:'Link or file name',
+  fTitleEn:'Dashboard title (English)', fTitleAr:'Dashboard title (Arabic)', fPm:'Project manager', none:'None',
+  openLink:'Open link', ref:'Reference',
+  footView:'This is a read-only view. Ask the project team for updates.',
+  footEdit:'Changes save automatically in this browser. When you are ready to share, press “Download view-only copy” and send that file to others.',
+  viewHelp:'Downloaded. Share this file; it has no editing tools.'
+ },
+ ar:{
+  title:'تمكين الأعمال للنمو الاقتصادي', pm:'مدير المشروع', updated:'آخر تحديث',
+  viewOnly:'للعرض فقط', editing:'وضع التعديل',
+  hero:(d,n)=>`${d} من ${n} مهمة منجزة`, left:n=>` — المتبقي ${n}`,
+  done:'منجز', progress:'قيد التنفيذ', blocked:'بانتظار مهمة أو جهة', delayed:'متعثر', open:'لم يبدأ',
+  notDone:'غير المنجز بعد', doneH:'المنجز', pastDue:'تجاوز الموعد', noOwner:'بدون مسؤول',
+  ws_economy:'مسار نمو الاقتصاد', ws_enablement:'بوابة تمكين الأعمال', byWs:'حسب المسار',
+  all:'الكل', owner:'المسؤول', allOwners:'كل المسؤولين', priority:'الأولوية', allPri:'كل الأولويات',
+  high:'عالية', medium:'متوسطة', low:'منخفضة', search:'ابحث في المهام', clear:'مسح الفلاتر',
+  byOwner:'حسب المسؤول', n_open:n=>`${n} متبقية`, unassigned:'غير معيّن', tasks:'مهمة', empty:'لا توجد مهام مطابقة.',
+  addTask:'إضافة مهمة', edit:'تعديل', save:'حفظ', cancel:'إلغاء', del:'حذف', confirmDel:'حذف هذه المهمة؟',
+  exportView:'تنزيل نسخة للعرض فقط', exportData:'نسخة احتياطية', importData:'استرجاع نسخة', reset:'إعادة بيانات الملف الأصلية',
+  confirmReset:'سيتم تجاهل كل التعديلات في هذا المتصفح والعودة للبيانات المحفوظة داخل الملف. متأكد؟', settings:'الإعدادات',
+  fTask:'المهمة', fWs:'المسار', fWho:'المسؤول', fDue:'الموعد', fPri:'الأولوية', fStatus:'الحالة', fRem:'ملاحظات', fLink:'رابط أو اسم ملف',
+  fTitleEn:'عنوان الداشبورد (إنجليزي)', fTitleAr:'عنوان الداشبورد (عربي)', fPm:'مدير المشروع', none:'بدون',
+  openLink:'فتح الرابط', ref:'مرجع',
+  footView:'هذه نسخة للعرض فقط. للتحديثات تواصل مع فريق المشروع.',
+  footEdit:'التعديلات تُحفظ تلقائياً في هذا المتصفح. عند الجاهزية اضغط «تنزيل نسخة للعرض فقط» وأرسل الملف للآخرين.',
+  viewHelp:'تم التنزيل. شارك هذا الملف، لا يحتوي على أدوات تعديل.'
+ }
+};
+
+let lang = 'en';
+try{ lang = localStorage.getItem('be-lang') || ((navigator.language||'').startsWith('ar')?'ar':'en'); }catch(e){}
+const tr = k => T[lang][k];
+
+/* ---------- data ---------- */
+function load(){
+  let d = JSON.parse($('#app-data').textContent);
+  if(EDIT){ try{ const l = localStorage.getItem(KEY); if(l) d = JSON.parse(l); }catch(e){} }
+  return d;
+}
+let S = load();
+function save(){ S.meta.updated = todayISO(); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const pad = n => String(n).padStart(2,'0');
+function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function fmt(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Intl.DateTimeFormat(lang==='ar'?'ar-u-ca-gregory':'en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(y,m-1,d));
+}
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isLate = t => t.status!=='done' && t.due && t.due < todayISO();
+const linkify = s => esc(s).replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+const num = n => lang==='ar' ? new Intl.NumberFormat('ar-EG').format(n) : String(n);
+
+/* ---------- filter state ---------- */
+const F = {ws:'all', owner:'', pri:'', q:'', st:'', flag:''};
+let pane = 'todo';
+const matches = t =>
+  (F.ws==='all'||t.ws===F.ws) &&
+  (!F.owner || (F.owner==='__none'? !t.who : t.who===F.owner)) &&
+  (!F.pri || t.priority===F.pri) &&
+  (!F.st || t.status===F.st) &&
+  (!F.flag || (F.flag==='late'&&isLate(t)) || (F.flag==='none'&&!t.who&&t.status!=='done')) &&
+  (!F.q || (t.task+' '+t.remarks+' '+t.who).toLowerCase().includes(F.q.toLowerCase()));
+
+/* ---------- render ---------- */
+function bar(cls, tasks, h){
+  const n = tasks.length || 1;
+  return `<div class="${cls}" role="img" aria-label="${BAR.map(s=>tr(s)+' '+tasks.filter(t=>t.status===s).length).join(', ')}">`+
+    BAR.map(s=>{const c=tasks.filter(t=>t.status===s).length; return c?`<span style="flex:${c} 1 0;background:${COLOR[s]}"></span>`:''}).join('')+`</div>`;
+}
+function renderTop(){
+  const all = S.tasks, n = all.length, d = all.filter(t=>t.status==='done').length;
+  const title = lang==='ar' ? (S.meta.titleAr||S.meta.title) : S.meta.title;
+  document.title = title;
+  const late = all.filter(isLate).length;
+  const wait = all.filter(t=>t.status==='blocked').length;
+  const none = all.filter(t=>!t.who && t.status!=='done').length;
+  const legend = BAR.map(s=>{
+    const c = all.filter(t=>t.status===s).length;
+    return `<button data-st="${s}" aria-pressed="${F.st===s}"><i style="background:${COLOR[s]}"></i>${tr(s)} <b>${num(c)}</b></button>`;
+  }).join('');
+  const stack = `<div class="stack" role="group">`+BAR.map(s=>{
+    const c = all.filter(t=>t.status===s).length;
+    return c?`<button data-st="${s}" style="flex:${c} 1 0;background:${COLOR[s]}" aria-label="${tr(s)}: ${c}" title="${tr(s)}: ${c}"></button>`:'';
+  }).join('')+`</div>`;
+  const wsRows = SINGLE ? '' : ['economy','enablement'].map(w=>{
+    const ts = all.filter(t=>t.ws===w), dd = ts.filter(t=>t.status==='done').length;
+    return `<div class="ws-row"><div class="lbl"><span>${tr('ws_'+w)}</span><span><b>${num(dd)}</b> / ${num(ts.length)}</span></div>${bar('mini',ts)}</div>`;
+  }).join('');
+  const tools = EDIT ? `
+    <button class="btn primary" data-act="add">${tr('addTask')}</button>
+    <button class="btn" data-act="export-view">${tr('exportView')}</button>
+    <button class="btn" data-act="settings">${tr('settings')}</button>
+    <button class="btn" data-act="backup">${tr('exportData')}</button>
+    <button class="btn" data-act="restore">${tr('importData')}</button>
+    <button class="btn" data-act="reset">${tr('reset')}</button>` : '';
+  $('#top').innerHTML = `
+    <div class="top">
+      <div>
+        <h1>${esc(title)}</h1>
+        <p class="sub">${tr('pm')}: ${esc(S.meta.pm)} &nbsp;|&nbsp; ${tr('updated')}: ${fmt(S.meta.updated)}</p>
+      </div>
+      <div class="tools">
+        <span class="badge ${EDIT?'edit':''}">${EDIT?tr('editing'):tr('viewOnly')}</span>
+        <span class="lang" role="group" aria-label="Language">
+          <button data-lang="en" aria-pressed="${lang==='en'}">EN</button><button data-lang="ar" aria-pressed="${lang==='ar'}">ع</button>
+        </span>
+      </div>
+    </div>
+    ${EDIT?`<div class="tools" style="margin-bottom:14px">${tools}</div>`:''}
+    <section class="hero" aria-label="${tr('hero')(d,n)}">
+      <h2>${tr('hero')(num(d),num(n))}<span>${tr('left')(num(n-d))}</span></h2>
+      ${stack}
+      <div class="legend">${legend}</div>
+      ${wsRows?`<div class="ws-rows">${wsRows}</div>`:''}
+    </section>
+    <div class="attn">
+      <button class="late" data-flag="late" aria-pressed="${F.flag==='late'}"><strong>${num(late)}</strong> ${tr('pastDue')}</button>
+      <button class="wait" data-st="blocked" aria-pressed="${F.st==='blocked'}"><strong>${num(wait)}</strong> ${tr('blocked')}</button>
+      <button class="none" data-flag="none" aria-pressed="${F.flag==='none'}"><strong>${num(none)}</strong> ${tr('noOwner')}</button>
+    </div>`;
+}
+function renderFilters(){
+  const owners = [...new Set(S.tasks.map(t=>t.who).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const seg = SINGLE ? '' : ['all','economy','enablement'].map(w=>`<button data-ws="${w}" aria-pressed="${F.ws===w}">${w==='all'?tr('all'):tr('ws_'+w)}</button>`).join('');
+  $('#filters').innerHTML = `
+    ${seg?`<div class="seg" role="group">${seg}</div>`:''}
+    <select id="fo" aria-label="${tr('owner')}"><option value="">${tr('allOwners')}</option>${owners.map(o=>`<option ${F.owner===o?'selected':''}>${esc(o)}</option>`).join('')}</select>
+    <select id="fp" aria-label="${tr('priority')}"><option value="">${tr('allPri')}</option>${['high','medium','low'].map(p=>`<option value="${p}" ${F.pri===p?'selected':''}>${tr(p)}</option>`).join('')}</select>
+    <input id="fq" type="search" placeholder="${tr('search')}" aria-label="${tr('search')}" value="${esc(F.q)}">
+    <button class="btn" data-act="clear">${tr('clear')}</button>`;
+}
+function row(t){
+  const late = isLate(t);
+  const rem = t.remarks ? `<p class="rem">${linkify(t.remarks)}</p>` : '';
+  const lk = t.link ? (/^https?:\/\//.test(t.link)
+      ? `<a class="lnk" href="${esc(t.link)}" target="_blank" rel="noopener">${tr('openLink')}</a>`
+      : `<span class="lnk" style="color:var(--muted)">${tr('ref')}: ${esc(t.link)}</span>`) : '';
+  const acts = EDIT ? `<div class="acts">
+      <select data-qs="${t.id}" aria-label="${tr('fStatus')}">${BAR.map(s=>`<option value="${s}" ${t.status===s?'selected':''}>${tr(s)}</option>`).join('')}</select>
+      <button class="btn sm" data-edit="${t.id}">${tr('edit')}</button></div>` : '';
+  return `<li class="task s-${t.status}"><div>
+    <p class="t">${esc(t.task)}</p>
+    <div class="meta">
+      <span class="chip who">${esc(t.who||tr('unassigned'))}</span>
+      ${t.due?`<span class="chip ${late?'late':''}">${fmt(t.due)}${late?' — '+tr('pastDue'):''}</span>`:''}
+      ${t.priority?`<span class="chip p-${t.priority}">${tr(t.priority)}</span>`:''}
+      ${SINGLE?'':`<span class="chip ws">${tr('ws_'+t.ws)}</span>`}
+    </div>${rem}${lk}</div>${acts}</li>`;
+}
+const byDue = (a,b)=> (a.due||'9999').localeCompare(b.due||'9999');
+function renderLists(){
+  const list = S.tasks.filter(matches);
+  const done = list.filter(t=>t.status==='done').sort((a,b)=>byDue(b,a));
+  const todo = list.filter(t=>t.status!=='done');
+  const groups = ORDER.map(s=>{
+    const ts = todo.filter(t=>t.status===s).sort((a,b)=>(isLate(b)-isLate(a))||byDue(a,b));
+    return ts.length ? `<div class="grp"><h4><i class="dot" style="background:${SWATCH[s]}"></i>${tr(s)} (${num(ts.length)})</h4><ul class="list">${ts.map(row).join('')}</ul></div>` : '';
+  }).join('');
+  $('#lists').innerHTML = `
+    <div class="seg panes" role="group">
+      <button data-pane="todo" aria-pressed="${pane==='todo'}">${tr('notDone')} (${num(todo.length)})</button>
+      <button data-pane="done" aria-pressed="${pane==='done'}">${tr('doneH')} (${num(done.length)})</button>
+    </div>
+    <div class="cols" data-pane="${pane}">
+      <section class="col donec"><h3>${tr('doneH')} <span class="n">${num(done.length)}</span></h3>
+        ${done.length?`<ul class="list">${done.map(row).join('')}</ul>`:`<div class="empty">${tr('empty')}</div>`}</section>
+      <section class="col todoc"><h3>${tr('notDone')} <span class="n">${num(todo.length)}</span></h3>
+        ${todo.length?groups:`<div class="empty">${tr('empty')}</div>`}</section>
+    </div>`;
+}
+function renderOwners(){
+  const names = [...new Set(S.tasks.map(t=>t.who||'__none'))];
+  const rows = names.map(o=>{
+    const ts = S.tasks.filter(t=>(t.who||'__none')===o), d = ts.filter(t=>t.status==='done').length;
+    return {o, ts, d, open:ts.length-d};
+  }).sort((a,b)=>b.open-a.open);
+  $('#owners').innerHTML = `<h3>${tr('byOwner')}</h3><div class="og">`+rows.map(r=>`
+    <button data-owner="${esc(r.o)}" aria-pressed="${F.owner===r.o}">
+      <div class="r"><b>${esc(r.o==='__none'?tr('unassigned'):r.o)}</b><span>${tr('n_open')(num(r.open))}</span></div>${bar('mini',r.ts)}
+    </button>`).join('')+`</div>`;
+}
+function renderFoot(){
+  $('#foot').textContent = EDIT ? tr('footEdit') : tr('footView');
+}
+function renderAll(){
+  document.documentElement.lang = lang; document.documentElement.dir = lang==='ar'?'rtl':'ltr';
+  renderTop(); renderFilters(); renderLists(); renderOwners(); renderFoot();
+}
+function renderBody(){ renderTop(); renderLists(); renderOwners(); }
+
+/* ---------- shell ---------- */
+$('#app').innerHTML = `<header id="top"></header>
+  <section class="filters" id="filters"></section>
+  <main id="lists"></main>
+  <section class="owners" id="owners"></section>
+  <footer id="foot"></footer>`;
+
+/* ---------- events ---------- */
+document.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  const d = b.dataset;
+  if(d.lang){ lang=d.lang; try{localStorage.setItem('be-lang',lang)}catch(_){} renderAll(); return; }
+  if(d.st!==undefined){ F.st = F.st===d.st ? '' : d.st; F.flag=''; renderBody(); return; }
+  if(d.flag){ F.flag = F.flag===d.flag ? '' : d.flag; F.st=''; renderBody(); return; }
+  if(d.ws){ F.ws=d.ws; renderFilters(); renderLists(); return; }
+  if(d.owner!==undefined){ F.owner = F.owner===d.owner ? '' : d.owner; renderFilters(); renderLists(); renderOwners(); return; }
+  if(d.pane){ pane=d.pane; renderLists(); return; }
+  if(d.edit){ openTask(d.edit); return; }
+  if(d.act==='clear'){ Object.assign(F,{ws:'all',owner:'',pri:'',q:'',st:'',flag:''}); renderAll(); return; }
+  if(!EDIT) return;
+  if(d.act==='add') openTask(null);
+  if(d.act==='settings') openSettings();
+  if(d.act==='export-view') exportView();
+  if(d.act==='backup') download('be-dashboard-backup-'+todayISO()+'.json', JSON.stringify(S,null,1), 'application/json');
+  if(d.act==='restore') $('#file').click();
+  if(d.act==='reset' && confirm(tr('confirmReset'))){ try{localStorage.removeItem(KEY)}catch(_){} S=load(); renderAll(); }
+});
+document.addEventListener('change', e=>{
+  const el = e.target;
+  if(el.id==='fo'){ F.owner=el.value; renderLists(); renderOwners(); }
+  else if(el.id==='fp'){ F.pri=el.value; renderLists(); }
+  else if(el.dataset.qs && EDIT){
+    const t = S.tasks.find(x=>x.id===el.dataset.qs); if(t){ t.status=el.value; save(); renderAll(); }
+  } else if(el.id==='file' && EDIT){
+    const f = el.files[0]; if(!f) return;
+    f.text().then(txt=>{ try{ const d=JSON.parse(txt); if(d.tasks&&d.meta){ S=d; save(); renderAll(); } }catch(_){ alert('Invalid file'); } });
+    el.value='';
+  }
+});
+document.addEventListener('input', e=>{ if(e.target.id==='fq'){ F.q=e.target.value; renderLists(); } });
+
+/* ---------- edit mode: dialogs ---------- */
+function openTask(id){
+  if(!EDIT) return;
+  const t = id ? S.tasks.find(x=>x.id===id) : {task:'',ws:'enablement',who:'',due:'',priority:'medium',status:'open',remarks:'',link:''};
+  const owners = [...new Set(S.tasks.map(x=>x.who).filter(Boolean))].sort();
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<form method="dialog" class="dlg" id="tf">
+    <h3>${id?tr('edit'):tr('addTask')}</h3>
+    <div class="f">
+      <label>${tr('fTask')}<textarea name="task" required>${esc(t.task)}</textarea></label>
+      <div class="${SINGLE?'':'two'}">
+        ${SINGLE?'':`<label>${tr('fWs')}<select name="ws">${['economy','enablement'].map(w=>`<option value="${w}" ${t.ws===w?'selected':''}>${tr('ws_'+w)}</option>`).join('')}</select></label>`}
+        <label>${tr('fStatus')}<select name="status">${BAR.map(s=>`<option value="${s}" ${t.status===s?'selected':''}>${tr(s)}</option>`).join('')}</select></label>
+      </div>
+      <div class="two">
+        <label>${tr('fWho')}<input name="who" list="ol" value="${esc(t.who)}"><datalist id="ol">${owners.map(o=>`<option value="${esc(o)}">`).join('')}</datalist></label>
+        <label>${tr('fDue')}<input type="date" name="due" value="${esc(t.due)}"></label>
+      </div>
+      <label>${tr('fPri')}<select name="priority"><option value="">${tr('none')}</option>${['high','medium','low'].map(p=>`<option value="${p}" ${t.priority===p?'selected':''}>${tr(p)}</option>`).join('')}</select></label>
+      <label>${tr('fRem')}<textarea name="remarks">${esc(t.remarks)}</textarea></label>
+      <label>${tr('fLink')}<input name="link" value="${esc(t.link)}"></label>
+    </div>
+    <div class="dact">
+      <div>${id?`<button type="button" class="btn danger" id="dd">${tr('del')}</button>`:''}</div>
+      <div><button type="button" class="btn" id="dc">${tr('cancel')}</button><button class="btn primary" id="ds" value="save">${tr('save')}</button></div>
+    </div></form>`;
+  dlg.showModal();
+  $('#dc').onclick = ()=>dlg.close();
+  if(id) $('#dd').onclick = ()=>{ if(confirm(tr('confirmDel'))){ S.tasks=S.tasks.filter(x=>x.id!==id); save(); dlg.close(); renderAll(); } };
+  $('#tf').onsubmit = ev=>{
+    const fd = new FormData(ev.target), v = k=>String(fd.get(k)||'').trim();
+    const rec = {task:v('task'), ws:SINGLE?'enablement':v('ws'), status:v('status'), who:v('who'), due:v('due'), priority:v('priority'), remarks:v('remarks'), link:v('link')};
+    if(!rec.task) return;
+    if(id) Object.assign(t, rec); else S.tasks.push({id:'n'+Date.now(), ...rec});
+    save(); renderAll();
+  };
+}
+function openSettings(){
+  const dlg = $('#dlg');
+  dlg.innerHTML = `<form method="dialog" class="dlg" id="sf"><h3>${tr('settings')}</h3>
+    <div class="f">
+      <label>${tr('fTitleEn')}<input name="title" value="${esc(S.meta.title)}"></label>
+      <label>${tr('fTitleAr')}<input name="titleAr" dir="rtl" value="${esc(S.meta.titleAr||'')}"></label>
+      <label>${tr('fPm')}<input name="pm" value="${esc(S.meta.pm)}"></label>
+    </div>
+    <div class="dact"><div></div><div><button type="button" class="btn" id="dc">${tr('cancel')}</button><button class="btn primary">${tr('save')}</button></div></div></form>`;
+  dlg.showModal(); $('#dc').onclick=()=>dlg.close();
+  $('#sf').onsubmit = ev=>{ const fd=new FormData(ev.target); ['title','titleAr','pm'].forEach(k=>S.meta[k]=String(fd.get(k)||'').trim()); save(); renderAll(); };
+}
+
+/* ---------- export ---------- */
+function download(name, text, type){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text],{type:type+';charset=utf-8'}));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+function exportView(){
+  S.meta.updated = todayISO(); save();
+  const clone = document.documentElement.cloneNode(true);
+  clone.dataset.mode = 'view';
+  clone.removeAttribute('dir');
+  clone.querySelector('#app').innerHTML = '';
+  clone.querySelector('#dlg').innerHTML = '';
+  clone.querySelector('#app-data').textContent = JSON.stringify(S).replace(/</g,'\\u003c');
+  download('Business_Enablement_Dashboard_VIEW_ONLY.html', '<!DOCTYPE html>\n'+clone.outerHTML, 'text/html');
+}
+
+renderAll();
+})();
+</script>
+</body>
+</html>
